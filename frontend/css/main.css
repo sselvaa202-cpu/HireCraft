@@ -348,3 +348,71 @@ Responsive Layout
         text-align: center;
     }
 }
+
+
+/* ========================================
+   Career Analysis Form
+   ======================================== */
+
+.analysis-form {
+    max-width: 720px;
+    margin-top: 50px;
+}
+
+#career-analysis-form {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid #d4d4d4;
+    border-radius: 8px;
+    background: #ffffff;
+    font-family: inherit;
+    font-size: 1rem;
+    line-height: 1.5;
+    outline: none;
+    transition: border-color 0.2s ease,
+                box-shadow 0.2s ease;
+    box-sizing: border-box;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    border-color: #111111;
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.08);
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color: #888888;
+}
+
+#career-analysis-form .primary-button {
+    align-self: flex-start;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 1rem;
+    padding: 14px 24px;
+}
