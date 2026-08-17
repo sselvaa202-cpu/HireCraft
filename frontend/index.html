@@ -1,296 +1,205 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
 
-<head>
-    <meta charset="UTF-8">
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <meta
-        name="description"
-        content="HireCraft - AI-powered career optimization platform"
-    >
+      name="description"
+      content="HireCraft - AI-powered career optimization platform"
+    />
 
     <title>HireCraft</title>
 
-    <link rel="stylesheet" href="css/main.css">
-</head>
+    <link rel="stylesheet" href="css/main.css" />
+  </head>
 
-<body>
-
+  <body>
     <!-- Header -->
 
     <header class="site-header">
+      <div class="container">
+        <a href="/" class="logo"> HireCraft </a>
 
-        <div class="container">
-
-            <a href="/" class="logo">
-                HireCraft
-            </a>
-
-            <nav class="main-nav">
-                <a href="#home">Home</a>
-                <a href="#analyze">Analyze</a>
-                <a href="#about">About</a>
-            </nav>
-
-        </div>
-
+        <nav class="main-nav">
+          <a href="#home">Home</a>
+          <a href="#analyze">Analyze</a>
+          <a href="#about">About</a>
+        </nav>
+      </div>
     </header>
-
 
     <!-- Main Content -->
 
     <main>
-
-        <!-- Hero Section -->
-
-        <section id="home" class="hero">
-
-            <div class="container">
-
-                <p class="eyebrow">
-                    &nbsp;BUILD. ANALYZE. IMPROVE.
-                </p>
-
-                <h1 class="header">
-                    Build a stronger
-                    <span>career profile.</span>
-                </h1>
-
-                <p class="hero-description">
-                    Analyze your skills, experience, projects and career
-                    profile to discover opportunities for improvement.
-                </p>
-
-                <a href="#analyze" class="primary-button">
-                    Start Analysis
-                </a>
-
-            </div>
-
-        </section>
-
-
-        <!-- Analysis Section -->
-
-        <section id="analyze" class="analysis-section">
-
-            <div class="container">
-
-                <p class="eyebrow">
-                    CAREER ANALYSIS
-                </p>
-
-                <h2 class="header">
-                    Start your career analysis
-                </h2>
-
-                <p>
-                    Enter your career information and HireCraft
-                    will analyze it.
-                </p>
-
-                <div class="analysis-form">
-
-                <form id="career-analysis-form">
-
-                    <!-- Personal Information -->
-
-                    <div class="form-group">
-
-                        <label for="full-name">
-                            Full Name
-                        </label>
-
-                        <input
-                            type="text"
-                            class="details"
-                            id="full-name"
-                            name="full_name"
-                            placeholder="Enter your full name"
-                            autocomplete="name"
-                        >
-
-                    </div>
-
-
-                    <!-- Current Role -->
-
-                    <div class="form-group">
-
-                        <label for="current-role">
-                            Current Role (optional)
-                        </label>
-
-                        <input
-                            type="text"
-                            class="details"
-                            id="current-role"
-                            name="current_role"
-                            placeholder="e.g. Python Developer"
-                        >
-
-                    </div>
-
-
-                    <!-- Skills -->
-
-                    <div class="form-group">
-
-                        <label for="skills">
-                            Skills
-                        </label>
-
-                        <textarea
-                            id="skills"
-                            class="details"
-                            name="skills"
-                            rows="4"
-                            placeholder="e.g. Python, SQL, FastAPI, JavaScript"
-                        ></textarea>
-
-                    </div>
-
-
-                    <!-- Experience -->
-
-                    <div class="form-group">
-
-                        <label for="experience">
-                            Experience (optional)
-                        </label>
-
-                        <textarea
-                            id="experience"
-                            class="details"
-                            name="experience"
-                            rows="5"
-                            placeholder="Describe your work experience"
-                        ></textarea>
-
-                    </div>
-
-
-                    <!-- Projects -->
-
-                    <div class="form-group">
-
-                        <label for="projects">
-                            Projects
-                        </label>
-
-                        <textarea
-                            id="projects"
-                            class="details"
-                            name="projects"
-                            rows="5"
-                            placeholder="Describe your important projects"
-                        ></textarea>
-
-                    </div>
-
-
-                    <!-- Education -->
-
-                    <div class="form-group">
-
-                        <label for="education">
-                            Education
-                        </label>
-
-                        <textarea
-                            id="education"
-                            class="details"
-                            name="education"
-                            rows="4"
-                            placeholder="Enter your education details"
-                        ></textarea>
-
-                    </div>
-
-
-                    <!-- Job Description -->
-
-                    <div class="form-group">
-
-                        <label for="job-description">
-                            Target Job Description
-                        </label>
-
-                        <textarea
-                            id="job-description"
-                            class="details"
-                            name="job_description"
-                            rows="7"
-                            placeholder="Paste the job description you are targeting"
-                        ></textarea>
-
-                    </div>
-
-
-                    <!-- Submit -->
-
-                    <button
-                        type="submit"
-                        class="primary-button"
-                    >
-                        Analyze My Profile
-                    </button>
-
-                </form>
-
-            </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- About Section -->
-
-        <section id="about" class="about-section">
-
-            <div class="container">
-
-                <p class="eyebrow">
-                    ABOUT HIRECRAFT
-                </p>
-
-                <h2 class="header">
-                    Your career, analyzed intelligently.
-                </h2>
-
-                <p>
-                    HireCraft is an AI-powered career optimization
-                    platform designed to help candidates understand
-                    and improve their professional profile.
-                </p>
-
-            </div>
-
-        </section>
-
+      <!-- Hero Section -->
+
+      <section id="home" class="hero">
+        <div class="container">
+          <p class="eyebrow">&nbsp;BUILD. ANALYZE. IMPROVE.</p>
+
+          <h1 class="header">
+            Build a stronger
+            <span>career profile.</span>
+          </h1>
+
+          <p class="hero-description">
+            Analyze your skills, experience, projects and career profile to
+            discover opportunities for improvement.
+          </p>
+
+          <a href="#analyze" class="primary-button"> Start Analysis </a>
+        </div>
+      </section>
+
+      <!-- Analysis Section -->
+
+      <section id="analyze" class="analysis-section">
+        <div class="container">
+          <p class="eyebrow">CAREER ANALYSIS</p>
+
+          <h2 class="header">Start your career analysis</h2>
+
+          <p>Enter your career information and HireCraft will analyze it.</p>
+
+          <div class="analysis-form">
+            <form id="career-analysis-form">
+              <!-- Personal Information -->
+
+              <div class="form-group">
+                <label for="full-name"> Full Name </label>
+
+                <input
+                  type="text"
+                  class="details"
+                  id="full-name"
+                  name="full_name"
+                  placeholder="Enter your full name"
+                  autocomplete="name"
+                />
+              </div>
+
+              <!-- Current Role -->
+
+              <div class="form-group">
+                <label for="current-role"> Current Role (optional) </label>
+
+                <input
+                  type="text"
+                  class="details"
+                  id="current-role"
+                  name="current_role"
+                  placeholder="e.g. Python Developer"
+                />
+              </div>
+
+              <!-- Skills -->
+
+              <div class="form-group">
+                <label for="skills"> Skills </label>
+
+                <textarea
+                  id="skills"
+                  class="details"
+                  name="skills"
+                  rows="4"
+                  placeholder="e.g. Python, SQL, FastAPI, JavaScript"
+                ></textarea>
+              </div>
+
+              <!-- Experience -->
+
+              <div class="form-group">
+                <label for="experience"> Experience (optional) </label>
+
+                <textarea
+                  id="experience"
+                  class="details"
+                  name="experience"
+                  rows="5"
+                  placeholder="Describe your work experience"
+                ></textarea>
+              </div>
+
+              <!-- Projects -->
+
+              <div class="form-group">
+                <label for="projects"> Projects </label>
+
+                <textarea
+                  id="projects"
+                  class="details"
+                  name="projects"
+                  rows="5"
+                  placeholder="Describe your important projects"
+                ></textarea>
+              </div>
+
+              <!-- Education -->
+
+              <div class="form-group">
+                <label for="education"> Education </label>
+
+                <textarea
+                  id="education"
+                  class="details"
+                  name="education"
+                  rows="4"
+                  placeholder="Enter your education details"
+                ></textarea>
+              </div>
+
+              <!-- Job Description -->
+
+              <div class="form-group">
+                <label for="job-description"> Target Job Description </label>
+
+                <textarea
+                  id="job-description"
+                  class="details"
+                  name="job_description"
+                  rows="7"
+                  placeholder="Paste the job description you are targeting"
+                ></textarea>
+              </div>
+
+              <!-- Submit -->
+
+              <button type="submit" class="primary-button">
+                Analyze My Profile
+              </button>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- About Section -->
+
+      <section id="about" class="about-section">
+        <div class="container">
+          <p class="eyebrow">ABOUT HIRECRAFT</p>
+
+          <h2 class="header">From career goal to career-ready.</h2>
+
+          <p>
+            HireCraft is an AI-powered career alignment platform that transforms
+            your career profile around the role you want. Set your target job,
+            and HireCraft helps align your LinkedIn, GitHub, skills, projects,
+            and interview preparation to make you ready for that role.
+          </p>
+        </div>
+      </section>
     </main>
-
 
     <!-- Footer -->
 
     <footer class="site-footer">
-
-        <div class="container">
-
-            <p>
-                © 2026 HireCraft. Open-source career optimization platform.
-            </p>
-
-        </div>
-
+      <div class="container">
+        <p>© 2026 HireCraft. Open-source career optimization platform.</p>
+      </div>
     </footer>
 
-
     <script src="js/main.js"></script>
-
-</body>
-
+  </body>
 </html>
