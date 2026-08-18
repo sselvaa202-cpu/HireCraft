@@ -1,5 +1,8 @@
 from fastapi import FastAPI
 
+from app.routers.analysis import router as analysis_router
+
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(
     title="HireCraft API",
@@ -7,16 +10,26 @@ app = FastAPI(
     description="AI-powered career optimization platform"
 )
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://127.0.0.1:5500"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+app.include_router(analysis_router)
+
 
 @app.get("/")
 def root():
     return {
-        "message": "Welcome to HireCraft API"
+        "message": "HireCraft API is running"
     }
 
 
 @app.get("/health")
 def health():
     return {
-        "status": "ok"
+        "status": "healthy"
     }

@@ -3,7 +3,6 @@
 HireCraft - Global CSS Foundation
 */
 
-@import url('https://fonts.googleapis.com/css2?family=Elms+Sans:ital,wght@0,100..900;1,100..900&family=Michroma&display=swap');
 
 /* CSS Reset */
 
@@ -49,6 +48,12 @@ body {
     font-style: normal;
 }
 
+.header{
+    font-family: var(--font-primary);
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+}
 
 /* Links */
 
@@ -422,4 +427,3 @@ Responsive Layout
     font-size: 1rem;
     padding: 14px 24px;
 }
-
