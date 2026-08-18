@@ -25,18 +25,36 @@ careerForm.addEventListener("submit", async function (event) {
     console.log("HireCraft Career Profile:");
     console.log(careerProfile);
 
-    // Send data to FastAPI backend
-    const response = await fetch("http://127.0.0.1:8000/api/analyze", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(careerProfile)
-    });
+    try {
 
-    // Get backend response
-    const data = await response.json();
+        // Send data to FastAPI backend
+        const response = await fetch("http://127.0.0.1:8000/api/analyze", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(careerProfile)
+        });
 
-    // Display backend response
-    console.log("Backend Response:", data);
+        // Check HTTP response
+        if (!response.ok) {
+            throw new Error(`API request failed: ${response.status}`);
+        }
+
+        // Get backend response
+        const data = await response.json();
+
+        // Display backend response
+        console.log("Backend Response:", data);
+
+    } catch (error) {
+
+        // Handle API/network errors
+        console.error("HireCraft API Error:", error);
+
+        alert(
+            "Unable to connect to HireCraft backend.\n\n" +
+            "Please make sure the FastAPI server is running."
+        );
+    }
 });
