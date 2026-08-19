@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException
 
 from app.schemas.career import CareerProfile
+from app.services.analysis import analyze_career_profile
 
 
 router = APIRouter(
@@ -14,11 +15,14 @@ def analyze_profile(profile: CareerProfile):
 
     try:
 
+        analysis = analyze_career_profile(profile)
+
         return {
             "status": "success",
-            "message": "Career profile received successfully",
+            "message": "Career analysis completed successfully",
             "data": {
-                "profile": profile
+                "profile": profile,
+                "analysis": analysis
             }
         }
 
