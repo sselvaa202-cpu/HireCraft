@@ -1,5 +1,6 @@
 from app.schemas.career import CareerProfile
 from app.schemas.analysis import AnalysisResult
+from app.schemas.analysis import AnalysisResult, SkillGap
 
 
 JOB_SKILLS = {
@@ -91,9 +92,30 @@ def analyze_career_profile(profile: CareerProfile) -> AnalysisResult:
         user_skills.intersection(required_skills)
     )
 
-    skill_gaps = sorted(
+
+    missing_skills = sorted(
         required_skills.difference(user_skills)
     )
+
+    skill_gaps = []
+
+    for skill in missing_skills:
+
+        if skill in {"python", "sql", "fastapi", "postgresql"}:
+            priority = "high"
+
+        elif skill in {"javascript", "react", "git", "docker"}:
+            priority = "medium"
+
+        else:
+            priority = "low"
+
+        skill_gaps.append(
+            SkillGap(
+                skill=skill,
+                priority=priority
+            )
+        )
 
     if required_skills:
         match_percentage = (
@@ -104,10 +126,50 @@ def analyze_career_profile(profile: CareerProfile) -> AnalysisResult:
 
     strengths = matched_skills.copy()
 
-    recommendations = [
-        f"Learn {skill.title()}"
-        for skill in skill_gaps
-    ]
+    skill_display_names = {
+        "python": "Python",
+        "sql": "SQL",
+        "fastapi": "FastAPI",
+        "postgresql": "PostgreSQL",
+        "git": "Git",
+        "html": "HTML",
+        "css": "CSS",
+        "javascript": "JavaScript",
+        "react": "React",
+        "excel": "Excel",
+        "power bi": "Power BI",
+        "statistics": "Statistics",
+        "docker": "Docker",
+        "data structures": "Data Structures",
+        "algorithms": "Algorithms"
+    }
+
+
+    priority_order = {
+        "high": 1,
+        "medium": 2,
+        "low": 3
+    }
+
+
+    skill_gaps.sort(
+        key=lambda gap: priority_order[gap.priority]
+    )
+
+
+    recommendations = []
+
+    for gap in skill_gaps:
+
+        skill_name = skill_display_names.get(
+            gap.skill,
+            gap.skill.title()
+        )
+
+        recommendations.append(
+            f"Learn {skill_name} — "
+            f"{gap.priority.title()} Priority"
+        )
 
     return AnalysisResult(
         match_percentage=round(match_percentage, 2),
