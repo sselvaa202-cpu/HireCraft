@@ -427,3 +427,7 @@ Responsive Layout
     border: 1px solid #504a4a;
     box-shadow: 0 0 5px #312f2f94;
 }
+
+.analysis-result {
+    display: none;
+}
