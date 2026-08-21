@@ -14,8 +14,10 @@ careerForm.addEventListener("submit", async function (event) {
     // Prevent normal form submission
     event.preventDefault();
 
+
     // Get form values
     const formData = new FormData(careerForm);
+
 
     // Create career profile object
     const careerProfile = {
@@ -27,6 +29,7 @@ careerForm.addEventListener("submit", async function (event) {
         education: formData.get("education"),
         target_job_description: formData.get("job_description")
     };
+
 
     // Display collected data in console
     console.log("HireCraft Career Profile:");
@@ -57,32 +60,11 @@ careerForm.addEventListener("submit", async function (event) {
         // Get backend response
         const data = await response.json();
 
-
         console.log("Backend Response:", data);
 
 
         // Get analysis data
         const analysis = data.data.analysis;
-
-        document.getElementById("match-percentage").textContent =
-            `${analysis.match_percentage}%`;
-
-        document.getElementById("matched-skills").innerHTML =
-            analysis.matched_skills
-                .map(skill => `<li>${skill}</li>`)
-                .join("");
-
-        document.getElementById("skill-gaps").innerHTML =
-            analysis.skill_gaps
-                .map(gap => `<li>${gap.skill} — ${gap.priority} priority</li>`)
-                .join("");
-
-        document.getElementById("recommendations").innerHTML =
-            analysis.recommendations
-                .map(recommendation => `<li>${recommendation}</li>`)
-                .join("");
-
-        document.getElementById("analysis-result").style.display = "block";
 
 
         // Display match percentage
@@ -130,8 +112,11 @@ careerForm.addEventListener("submit", async function (event) {
         });
 
 
-        // Show analysis result section
+        // Show analysis result
         analysisResult.hidden = false;
+
+
+        console.log("Career analysis displayed successfully.");
 
 
     } catch (error) {

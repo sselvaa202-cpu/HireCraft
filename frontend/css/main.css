@@ -428,6 +428,136 @@ Responsive Layout
     box-shadow: 0 0 5px #312f2f94;
 }
 
-.analysis-result {
+/* .analysis-result {
     display: none;
+} */
+
+
+/* =========================================
+   HireCraft Analysis Result Dashboard
+========================================= */
+
+.analysis-result {
+    margin-top: 50px;
+    padding: 32px;
+    border: 1px solid var(--color-border);
+    border-radius: 18px;
+    background: #ffffff;
+}
+
+
+/* Header */
+
+.analysis-result-header {
+    margin-bottom: 30px;
+}
+
+.analysis-result-header h3 {
+    font-size: 1.8rem;
+    margin-top: 8px;
+}
+
+
+/* Match Score */
+
+.match-result {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 24px;
+
+    border-radius: 14px;
+
+    background: var(--color-text);
+
+    color: white;
+
+    margin-bottom: 28px;
+}
+
+.match-result span {
+    font-size: 1rem;
+    letter-spacing: 1px;
+}
+
+.match-result strong {
+    font-size: 3rem;
+    font-weight: 700;
+}
+
+
+/* Two column layout */
+
+.result-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 22px;
+
+    margin-bottom: 24px;
+}
+
+
+/* Result Cards */
+
+.result-group {
+    border: 1px solid var(--color-border);
+    border-radius: 14px;
+
+    padding: 20px;
+
+    background: #fafafa;
+}
+
+.result-group h4 {
+    margin-bottom: 16px;
+    font-size: 1.05rem;
+}
+
+
+/* Lists */
+
+.result-group ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.result-group li {
+    padding: 10px 12px;
+    margin-bottom: 8px;
+
+    border-radius: 8px;
+
+    background: white;
+
+    border: 1px solid #e5e5e5;
+
+    font-size: 0.95rem;
+}
+
+
+/* Recommendation Section */
+
+.recommendation-card {
+    border-left: 4px solid var(--color-text);
+}
+
+
+/* Responsive */
+
+@media (max-width: 768px) {
+
+    .analysis-result {
+        padding: 20px;
+    }
+
+    .result-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .match-result strong {
+        font-size: 2.3rem;
+    }
+
 }
