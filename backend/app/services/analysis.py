@@ -1,110 +1,59 @@
 from app.schemas.career import CareerProfile
-from app.schemas.analysis import AnalysisResult
 from app.schemas.analysis import AnalysisResult, SkillGap
+from app.schemas.job import JobRequirement
 
 
-JOB_SKILLS = {
-    "python developer": {
-        "python",
-        "sql",
-        "git",
-        "fastapi",
-        "postgresql"
-    },
+def analyze_career_profile(
+    profile: CareerProfile,
+    job: JobRequirement
+) -> AnalysisResult:
+    """
+    Analyze a career profile against structured job requirements.
+    """
 
-    "backend developer": {
-        "python",
-        "sql",
-        "fastapi",
-        "postgresql",
-        "git"
-    },
-
-    "frontend developer": {
-        "html",
-        "css",
-        "javascript",
-        "react",
-        "git"
-    },
-
-    "full stack developer": {
-        "html",
-        "css",
-        "javascript",
-        "react",
-        "python",
-        "sql",
-        "git"
-    },
-
-    "data analyst": {
-        "python",
-        "sql",
-        "excel",
-        "power bi",
-        "statistics"
-    },
-
-    "software engineer": {
-        "python",
-        "sql",
-        "git",
-        "data structures",
-        "algorithms"
+    # Required skills from the analyzed job description
+    required_skills = {
+        skill.strip().lower()
+        for skill in job.required_skills
+        if skill.strip()
     }
-}
 
-
-def get_required_skills(target_job: str) -> set[str]:
-    """
-    Return required skills for the requested job.
-    """
-
-    job = target_job.strip().lower()
-
-    return JOB_SKILLS.get(
-        job,
-        {
-            "python",
-            "sql",
-            "git"
-        }
-    )
-
-
-def analyze_career_profile(profile: CareerProfile) -> AnalysisResult:
-    """
-    Analyze a career profile against job-specific skills.
-    """
-
-    required_skills = get_required_skills(
-        profile.target_job_description
-    )
-
+    # User skills
     user_skills = {
         skill.strip().lower()
         for skill in profile.skills.split(",")
         if skill.strip()
     }
 
+    # Matched skills
     matched_skills = sorted(
         user_skills.intersection(required_skills)
     )
 
-
+    # Missing skills
     missing_skills = sorted(
         required_skills.difference(user_skills)
     )
 
+    # Skill gaps
     skill_gaps = []
 
     for skill in missing_skills:
 
-        if skill in {"python", "sql", "fastapi", "postgresql"}:
+        if skill in {
+            "python",
+            "sql",
+            "fastapi",
+            "postgresql"
+        }:
             priority = "high"
 
-        elif skill in {"javascript", "react", "git", "docker"}:
+        elif skill in {
+            "javascript",
+            "react",
+            "git",
+            "docker"
+        }:
             priority = "medium"
 
         else:
@@ -117,15 +66,30 @@ def analyze_career_profile(profile: CareerProfile) -> AnalysisResult:
             )
         )
 
+    # Match percentage
     if required_skills:
         match_percentage = (
-            len(matched_skills) / len(required_skills)
+            len(matched_skills)
+            / len(required_skills)
         ) * 100
     else:
         match_percentage = 0.0
 
+    # Strengths
     strengths = matched_skills.copy()
 
+    # Priority ordering
+    priority_order = {
+        "high": 1,
+        "medium": 2,
+        "low": 3
+    }
+
+    skill_gaps.sort(
+        key=lambda gap: priority_order[gap.priority]
+    )
+
+    # Skill display names
     skill_display_names = {
         "python": "Python",
         "sql": "SQL",
@@ -144,19 +108,7 @@ def analyze_career_profile(profile: CareerProfile) -> AnalysisResult:
         "algorithms": "Algorithms"
     }
 
-
-    priority_order = {
-        "high": 1,
-        "medium": 2,
-        "low": 3
-    }
-
-
-    skill_gaps.sort(
-        key=lambda gap: priority_order[gap.priority]
-    )
-
-
+    # Recommendations
     recommendations = []
 
     for gap in skill_gaps:
