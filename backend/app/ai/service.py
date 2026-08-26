@@ -1,49 +1,41 @@
 # HireCraft - AI Service
 
-import json
-
 from app.ai.client import llm_client
+from app.ai.errors import AIConfigurationError, AIRequestError
 from app.ai.prompts.job_analysis import build_job_analysis_prompt
-from app.ai.validation import validate_job_analysis_response
 from app.schemas.job import JobRequirement
+from app.services.job_analysis import analyze_job_description
 
 
-class AIService:
+def analyze_job_with_ai(job_description: str) -> JobRequirement:
     """
-    Main service responsible for AI-powered analysis.
+    Analyze a job description using AI.
+
+    If AI is unavailable or fails, fall back
+    to the Phase 4 rule-based analyzer.
     """
 
-    def __init__(self):
-        self.client = llm_client
-
-    def analyze_job_description(
-        self,
-        job_description: str
-    ) -> JobRequirement:
-        """
-        Analyze a job description using the LLM
-        and return a validated JobRequirement object.
-        """
-
-        # Build prompt
+    try:
+        # Build the AI prompt
         prompt = build_job_analysis_prompt(
             job_description
         )
 
-        # Generate AI response
-        response = self.client.generate(prompt)
+        # Ask the LLM for a response
+        response = llm_client.generate(prompt)
 
-        # Parse JSON
-        try:
-            data = json.loads(response)
+        # Convert AI JSON response into JobRequirement
+        return JobRequirement.model_validate_json(
+            response
+        )
 
-        except json.JSONDecodeError as e:
-            raise ValueError(
-                f"LLM returned invalid JSON: {e}"
-            )
-
-        # Validate AI response
-        return validate_job_analysis_response(data)
-
-
-ai_service = AIService()
+    except (
+        AIConfigurationError,
+        AIRequestError,
+        ValueError,
+    ):
+        # AI unavailable or invalid response.
+        # Use the existing Phase 4 analyzer.
+        return analyze_job_description(
+            job_description
+        )

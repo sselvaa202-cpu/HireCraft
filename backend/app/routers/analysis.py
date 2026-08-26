@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException
 
 from app.schemas.career import CareerProfile
 from app.services.analysis import analyze_career_profile
-from app.services.job_analysis import analyze_job_description
+from app.ai.service import analyze_job_with_ai
 
 
 router = APIRouter(
@@ -16,12 +16,12 @@ def analyze_profile(profile: CareerProfile):
 
     try:
 
-        # Analyze the target job description
-        job_requirements = analyze_job_description(
+        # AI analysis with Phase 4 fallback
+        job_requirements = analyze_job_with_ai(
             profile.target_job_description
         )
 
-        # Analyze the career profile
+        # Compare career profile with job requirements
         analysis = analyze_career_profile(
             profile,
             job_requirements
