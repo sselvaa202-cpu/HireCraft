@@ -1,89 +1,101 @@
-<div align="center">
-
 # HireCraft
 
-### Build. Analyze. Improve. Your Career.
+## AI-Powered Career Optimization and Job Readiness Platform
 
-**An AI-powered career alignment platform built to prepare you for the role you actually want.**
+HireCraft is an AI-powered career optimization platform designed to transform a target job description or target role into a structured, actionable career plan.
 
-[![Status](https://img.shields.io/badge/Status-Under%20Development-orange?style=flat-square)]()
-[![Python](https://img.shields.io/badge/Python-3.x-blue?style=flat-square&logo=python)]()
-[![FastAPI](https://img.shields.io/badge/FastAPI-Backend-009688?style=flat-square&logo=fastapi)]()
-[![JavaScript](https://img.shields.io/badge/JavaScript-Frontend-yellow?style=flat-square&logo=javascript)]()
-[![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
+Instead of providing generic career advice, HireCraft analyzes job requirements, evaluates candidate skills, identifies skill gaps, and generates recommendations for improving both professional positioning and technical portfolio strategy.
 
-</div>
+The long-term goal is to connect job analysis with LinkedIn strategy, GitHub strategy, project development, and interview preparation through a centralized AI-powered career intelligence engine.
 
 ---
 
 ## Table of Contents
 
-- [About the Project](#about-the-project)
-- [The Idea](#the-idea)
-- [Preview](#preview)
-- [Features](#features)
-- [Built With](#built-with)
+- [Overview](#overview)
+- [Problem Statement](#problem-statement)
+- [Vision](#vision)
+- [Architecture](#architecture)
+- [How HireCraft Works](#how-hirecraft-works)
+- [Current Implementation](#current-implementation)
+- [Core Features](#core-features)
+- [Career Analysis Engine](#career-analysis-engine)
+- [Job Analysis Engine](#job-analysis-engine)
+- [Skill Matching](#skill-matching)
+- [Skill Gap Prioritization](#skill-gap-prioritization)
+- [AI Architecture](#ai-architecture)
+- [LinkedIn Intelligence](#linkedin-intelligence)
+- [GitHub Intelligence](#github-intelligence)
+- [Technology Stack](#technology-stack)
 - [Project Structure](#project-structure)
+- [Data Flow](#data-flow)
+- [API Reference](#api-reference)
 - [Getting Started](#getting-started)
-- [How It Works](#how-it-works)
-- [Roadmap](#roadmap)
+- [Environment Configuration](#environment-configuration)
+- [Running the Backend](#running-the-backend)
+- [Running the Frontend](#running-the-frontend)
+- [API Documentation](#api-documentation)
+- [Example](#example)
+- [Screenshots](#screenshots)
+- [Development Roadmap](#development-roadmap)
+- [Engineering Practices](#engineering-practices)
+- [Security](#security)
+- [Known Limitations](#known-limitations)
 - [Contributing](#contributing)
 - [License](#license)
+- [Author](#author)
 
 ---
 
-## About the Project
+# Overview
 
-**HireCraft** is an open-source AI-powered career alignment platform that helps users prepare for a specific target job.
+The hiring process requires more than simply possessing technical skills.
 
-Instead of providing generic career advice, HireCraft takes a user's **target role** and analyzes their current career profile to identify what should be improved.
+A candidate must align:
 
-It connects:
+- Technical skills
+- Professional positioning
+- Projects
+- GitHub portfolio
+- LinkedIn profile
+- Job-specific keywords
+- Interview preparation
 
-**Target Job → Skills → LinkedIn → GitHub → Projects → Interview Preparation**
+HireCraft is designed to bring these areas together.
 
-The goal is to turn a career goal into a **personalized, actionable career plan**.
-
----
-
-## The Idea
-
-Most career platforms tell you to improve your resume, learn more skills, or build projects.
-
-HireCraft goes one step further.
-
-> **Tell HireCraft the job you want. It helps you understand what you need to become ready for it.**
+The core idea is:
 
 ```text
-Target Job
-     +
-Job Description
-     +
-Current Skills
-     +
-LinkedIn
-     +
-GitHub
-     │
-     ▼
-┌──────────────────┐
-│    HireCraft AI  │
-└────────┬─────────┘
-         │
-         ▼
-    Gap Analysis
-         │
-    ┌────┼────┬────────────┐
-    ▼    ▼    ▼            ▼
- LinkedIn GitHub Skills  Projects
-    │      │     │            │
-    └──────┴─────┴────────────┘
-               │
-               ▼
-      Interview Preparation
-               │
-               ▼
+User Input
+    |
+    +----------------------+
+    |                      |
+    v                      v
+Job Description        Target Role
+    |                      |
+    +----------+-----------+
+               |
+               v
+        AI Analysis Engine
+               |
+       +-------+-------+
+       |               |
+       v               v
+ LinkedIn Plan      GitHub Plan
+       |               |
+       v               v
+Profile Strategy    Projects to Build
+About Section       Repositories
+Skills Positioning  Technology Stack
+Content Strategy    README Structure
+Keywords            Portfolio Alignment
+Posting Ideas       Project Roadmap
+Interview Positioning
+       |               |
+       +-------+-------+
+               |
+               v
        Career Readiness
-               │
-               ▼
-       Actionable Career Plan
+               |
+               v
+      Actionable Career Plan
