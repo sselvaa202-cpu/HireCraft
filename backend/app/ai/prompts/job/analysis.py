@@ -1,7 +1,6 @@
 # HireCraft - Job Analysis Prompt
 
-
-from app.prompts.system import SYSTEM_PROMPT
+from app.ai.prompts.system import SYSTEM_PROMPT
 
 
 def build_job_analysis_prompt(job_description: str) -> str:
