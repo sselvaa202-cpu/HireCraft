@@ -1,54 +1,56 @@
 # HireCraft - Centralized AI Service
 
-import json
+from typing import Type, TypeVar
+
+from pydantic import BaseModel
 
 from app.ai.client import llm_client
-from app.ai.errors import AIRequestError
+from app.ai.retry import retry_ai_request
+from app.ai.validators import parse_json_response
+
+
+T = TypeVar("T", bound=BaseModel)
 
 
 class AIService:
     """
-    Centralized service for all AI operations in HireCraft.
+    Centralized AI service for HireCraft.
 
-    All future AI modules such as:
-    - LinkedIn
-    - GitHub
-    - Projects
-    - Interview
-    will use this service instead of calling the LLM directly.
+    Responsibilities:
+    - Send prompts to the configured LLM
+    - Parse JSON responses
+    - Validate responses using Pydantic
+    - Retry temporary AI failures
     """
 
-    def __init__(self, client=llm_client):
-        self.client = client
+    def __init__(self):
+        self.client = llm_client
 
-    def generate(self, prompt: str) -> str:
+    def generate_structured(
+        self,
+        prompt: str,
+        response_model: Type[T],
+    ) -> T:
         """
-        Send a prompt to the configured LLM
-        and return the raw response.
-        """
-
-        if not prompt or not prompt.strip():
-            raise AIRequestError(
-                "AI prompt cannot be empty."
-            )
-
-        return self.client.generate(prompt)
-
-    def generate_json(self, prompt: str) -> dict:
-        """
-        Generate a response from the LLM
-        and convert it into a Python dictionary.
+        Generate and validate a structured AI response.
         """
 
-        response = self.generate(prompt)
+        # Send request to LLM with retry support
+        raw_response = retry_ai_request(
+            lambda: self.client.generate(prompt)
+        )
 
-        try:
-            return json.loads(response)
+        # Parse JSON response
+        parsed_response = parse_json_response(
+            raw_response
+        )
 
-        except json.JSONDecodeError as e:
-            raise AIRequestError(
-                "LLM returned invalid JSON."
-            ) from e
+        # Validate against Pydantic schema
+        validated_response = response_model.model_validate(
+            parsed_response
+        )
+
+        return validated_response
 
 
 ai_service = AIService()
