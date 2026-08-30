@@ -4,6 +4,8 @@ from app.routers.analysis import router as analysis_router
 
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.routers.linkedin import router as linkedin_router
+
 app = FastAPI(
     title="HireCraft API",
     version="1.0.0",
@@ -19,6 +21,7 @@ app.add_middleware(
 )
 
 app.include_router(analysis_router)
+app.include_router(linkedin_router)
 
 
 @app.get("/")

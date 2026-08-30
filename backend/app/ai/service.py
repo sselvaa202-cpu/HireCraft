@@ -1,12 +1,14 @@
 # HireCraft - Centralized AI Service
 
-from typing import Type, TypeVar
+from typing import TypeVar
 
 from pydantic import BaseModel
 
 from app.ai.client import llm_client
 from app.ai.retry import retry_ai_request
 from app.ai.validators import parse_json_response
+from app.schemas.job import JobRequirement
+from app.ai.prompts.job.analysis import build_job_analysis_prompt
 
 
 T = TypeVar("T", bound=BaseModel)
@@ -17,10 +19,11 @@ class AIService:
     Centralized AI service for HireCraft.
 
     Responsibilities:
-    - Send prompts to the configured LLM
-    - Parse JSON responses
-    - Validate responses using Pydantic
-    - Retry temporary AI failures
+    - Prompt handling
+    - LLM communication
+    - Retry handling
+    - JSON parsing
+    - Pydantic validation
     """
 
     def __init__(self):
@@ -29,28 +32,42 @@ class AIService:
     def generate_structured(
         self,
         prompt: str,
-        response_model: Type[T],
+        response_model: type[T],
     ) -> T:
         """
-        Generate and validate a structured AI response.
+        Generate a structured response from the LLM.
         """
 
-        # Send request to LLM with retry support
         raw_response = retry_ai_request(
             lambda: self.client.generate(prompt)
         )
 
-        # Parse JSON response
         parsed_response = parse_json_response(
             raw_response
         )
 
-        # Validate against Pydantic schema
         validated_response = response_model.model_validate(
             parsed_response
         )
 
         return validated_response
+
+
+def analyze_job_with_ai(
+    job_description: str,
+) -> JobRequirement:
+    """
+    Analyze a job description using the centralized AI service.
+    """
+
+    prompt = build_job_analysis_prompt(
+        job_description
+    )
+
+    return ai_service.generate_structured(
+        prompt=prompt,
+        response_model=JobRequirement,
+    )
 
 
 ai_service = AIService()
