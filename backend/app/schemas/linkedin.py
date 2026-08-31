@@ -3,28 +3,25 @@ from pydantic import BaseModel, Field
 
 class LinkedInRequest(BaseModel):
     """
-    Input required to generate a LinkedIn plan.
+    User provides only the job description.
 
-    HireCraft uses only the target role and job requirements.
+    HireCraft extracts the target role and required
+    skills automatically from the job description.
     """
 
-    target_role: str = Field(
-        ...,
-        min_length=2
-    )
-
-    required_skills: list[str] = Field(
-        default_factory=list
-    )
+    target_role: str | None = None
+    job_description: str | None = None
 
 
 class LinkedInPlan(BaseModel):
     """
     Structured LinkedIn strategy generated from
-    a target job description or target role.
+    a job description.
     """
 
-    target_role: str = Field(default="Not specified")
+    target_role: str = Field(
+        default="Not specified"
+    )
 
     profile_strategy: list[str] = Field(
         default_factory=list

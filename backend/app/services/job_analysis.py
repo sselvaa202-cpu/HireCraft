@@ -1,4 +1,4 @@
-# HireCraft - Job Analysis Service
+# HireCraft - Job Analysis Service 
 
 import re
 
