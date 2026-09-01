@@ -1,22 +1,49 @@
-from pydantic import BaseModel, Field
+# HireCraft - LinkedIn Schemas
+
+from pydantic import BaseModel, Field, model_validator
 
 
 class LinkedInRequest(BaseModel):
     """
-    User provides only the job description.
+    User provides either:
+    1. target_role
+    OR
+    2. job_description
 
-    HireCraft extracts the target role and required
-    skills automatically from the job description.
+    HireCraft generates the LinkedIn plan internally.
+
+    No existing LinkedIn profile information is required.
     """
 
-    target_role: str | None = None
-    job_description: str | None = None
+    target_role: str | None = Field(
+        default=None,
+        min_length=2
+    )
+
+    job_description: str | None = Field(
+        default=None,
+        min_length=20
+    )
+
+    @model_validator(mode="after")
+    def validate_input(self):
+        """
+        At least one of target_role or job_description
+        must be provided.
+        """
+
+        if not self.target_role and not self.job_description:
+            raise ValueError(
+                "Provide either target_role or job_description."
+            )
+
+        return self
 
 
 class LinkedInPlan(BaseModel):
     """
     Structured LinkedIn strategy generated from
-    a job description.
+    a target role or job description.
     """
 
     target_role: str = Field(

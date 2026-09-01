@@ -7,7 +7,7 @@ from app.schemas.linkedin import (
     LinkedInPlan,
 )
 
-from app.services.career_plan import generate_career_plan
+from app.services.linkedin import generate_linkedin_plan
 
 
 router = APIRouter(
@@ -24,8 +24,7 @@ def create_linkedin_plan(
     request: LinkedInRequest,
 ) -> LinkedInPlan:
 
-    result = generate_career_plan(
-        job_description=request.job_description
+    return generate_linkedin_plan(
+        target_role=request.target_role,
+        job_description=request.job_description,
     )
-
-    return result["linkedin_plan"]
