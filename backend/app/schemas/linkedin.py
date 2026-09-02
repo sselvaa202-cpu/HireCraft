@@ -2,6 +2,8 @@
 
 from pydantic import BaseModel, Field, model_validator
 
+from app.schemas.linkedin_search import LinkedInSearchPlan
+
 
 class LinkedInRequest(BaseModel):
     """
@@ -46,38 +48,60 @@ class LinkedInPlan(BaseModel):
     a target role or job description.
     """
 
+    # Target Role
+
     target_role: str = Field(
         default="Not specified"
     )
+
+    # Profile Strategy
 
     profile_strategy: list[str] = Field(
         default_factory=list
     )
 
+    # Headline
+
     headline: str = Field(
         default="Not specified"
     )
+
+    # About Section
 
     about_section: str = Field(
         default="Not specified"
     )
 
+    # Skills
+
     skills_to_highlight: list[str] = Field(
         default_factory=list
     )
+
+    # Content Strategy
 
     content_strategy: list[str] = Field(
         default_factory=list
     )
 
+    # Posting Plan
+
     posting_plan: list[str] = Field(
         default_factory=list
     )
+
+    # Networking Strategy
 
     networking_strategy: list[str] = Field(
         default_factory=list
     )
 
+    # Job Search Strategy
+
     job_search_strategy: list[str] = Field(
         default_factory=list
     )
+
+    # LinkedIn Search Intelligence
+
+    search_intelligence: LinkedInSearchPlan | None = None
