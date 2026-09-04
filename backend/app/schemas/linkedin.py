@@ -4,6 +4,7 @@ from pydantic import BaseModel, Field, model_validator
 
 from app.schemas.linkedin_search import LinkedInSearchPlan
 from app.schemas.linkedin_profile import LinkedInProfileOptimization
+from app.schemas.linkedin_content import LinkedInContentPlan
 
 
 class LinkedInRequest(BaseModel):
@@ -108,3 +109,6 @@ class LinkedInPlan(BaseModel):
 
     # LinkedIn Profile Optimization
     profile_optimization: LinkedInProfileOptimization | None = None
+
+    # LinkedIn content Intelligence
+    content_intelligence: LinkedInContentPlan | None = None

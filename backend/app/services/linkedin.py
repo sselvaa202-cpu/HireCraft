@@ -3,6 +3,7 @@
 from app.schemas.linkedin import LinkedInPlan
 from app.services.linkedin_search import generate_linkedin_search_plan
 from app.services.linkedin_profile import generate_profile_optimization
+from app.services.linkedin_content import generate_linkedin_content_plan
 import re
 
 
@@ -380,6 +381,11 @@ def generate_linkedin_plan(
         required_skills=skills,
     )
 
+    content_intelligence = generate_linkedin_content_plan(
+        target_role=target_role,
+        required_skills=skills,
+    )
+
 
     # 12. Return Complete LinkedIn Plan
 
@@ -405,4 +411,6 @@ def generate_linkedin_plan(
         search_intelligence=search_plan,
 
         profile_optimization=profile_optimization,
+
+        content_intelligence=content_intelligence,
     )
