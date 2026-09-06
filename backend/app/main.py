@@ -1,16 +1,18 @@
 from fastapi import FastAPI
 
-from app.routers.analysis import router as analysis_router
-
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.routers.analysis import router as analysis_router
 from app.routers.linkedin import router as linkedin_router
+from app.routers.github import router as github_router
+
 
 app = FastAPI(
     title="HireCraft API",
     version="1.0.0",
     description="AI-powered career optimization platform"
 )
+
 
 app.add_middleware(
     CORSMiddleware,
@@ -20,12 +22,28 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(analysis_router)
-app.include_router(linkedin_router)
+
+# Existing Analysis API
+app.include_router(
+    analysis_router
+)
+
+
+# LinkedIn Intelligence
+app.include_router(
+    linkedin_router
+)
+
+
+# GitHub Intelligence
+app.include_router(
+    github_router
+)
 
 
 @app.get("/")
 def root():
+
     return {
         "message": "HireCraft API is running"
     }
@@ -33,6 +51,7 @@ def root():
 
 @app.get("/health")
 def health():
+
     return {
         "status": "healthy"
     }
