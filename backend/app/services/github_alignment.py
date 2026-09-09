@@ -1,253 +1,725 @@
-# HireCraft - GitHub Target Alignment
+# HireCraft - GitHub Alignment & Recommendation Service
 
 from typing import Any
 
 
-def normalize(value: str) -> str:
-    return value.strip().lower()
+# Role-specific GitHub recommendations
+
+ROLE_RECOMMENDATIONS = {
+    "backend developer": {
+        "important_skills": [
+            "Python",
+            "FastAPI",
+            "PostgreSQL",
+            "Git",
+            "REST API",
+            "SQL",
+        ],
+        "recommended_project_types": [
+            "REST API backend",
+            "FastAPI + PostgreSQL application",
+            "Authentication and authorization system",
+            "Backend service with database integration",
+        ],
+    },
+
+    "python developer": {
+        "important_skills": [
+            "Python",
+            "SQL",
+            "FastAPI",
+            "Django",
+            "Git",
+        ],
+        "recommended_project_types": [
+            "Python backend application",
+            "REST API",
+            "Automation project",
+            "Database-driven Python application",
+        ],
+    },
+
+    "frontend developer": {
+        "important_skills": [
+            "HTML",
+            "CSS",
+            "JavaScript",
+            "React",
+            "Git",
+        ],
+        "recommended_project_types": [
+            "React application",
+            "Responsive frontend",
+            "Dashboard",
+            "API-integrated frontend",
+        ],
+    },
+
+    "full stack developer": {
+        "important_skills": [
+            "Python",
+            "JavaScript",
+            "React",
+            "SQL",
+            "PostgreSQL",
+            "Git",
+        ],
+        "recommended_project_types": [
+            "Full-stack web application",
+            "React + FastAPI application",
+            "Authentication system",
+            "Database-driven application",
+        ],
+    },
+
+    "software engineer": {
+        "important_skills": [
+            "Python",
+            "SQL",
+            "Git",
+            "REST API",
+            "Docker",
+        ],
+        "recommended_project_types": [
+            "Production-style backend application",
+            "API service",
+            "Software architecture project",
+            "Dockerized application",
+        ],
+    },
+}
 
 
-def collect_github_skills(
-    repositories: list[dict[str, Any]],
-) -> list[str]:
+# Helpers
+
+def normalize_skill(skill: str) -> str:
     """
-    Collect all technologies detected across
-    GitHub repositories.
+    Normalize skill names for comparison.
     """
 
-    skills = set()
-
-    for repository in repositories:
-
-        for language in repository.get(
-            "languages",
-            []
-        ):
-            skills.add(
-                normalize(language)
-            )
-
-        for topic in repository.get(
-            "topics",
-            []
-        ):
-            skills.add(
-                normalize(topic)
-            )
-
-    return sorted(skills)
-
-
-def find_matching_skills(
-    required_skills: list[str],
-    github_skills: list[str],
-) -> list[str]:
-    """
-    Find target skills that are already
-    represented in the GitHub profile.
-    """
-
-    github_skills_normalized = {
-        normalize(skill)
-        for skill in github_skills
+    aliases = {
+        "fastapi": "fastapi",
+        "fast api": "fastapi",
+        "postgres": "postgresql",
+        "postgresql": "postgresql",
+        "python": "python",
+        "git": "git",
+        "github": "git",
+        "rest api": "rest api",
+        "api": "api",
+        "sql": "sql",
+        "mysql": "mysql",
+        "javascript": "javascript",
+        "react": "react",
+        "django": "django",
+        "docker": "docker",
     }
 
-    matches = []
+    value = skill.strip().lower()
 
-    for skill in required_skills:
-
-        if normalize(skill) in github_skills_normalized:
-            matches.append(skill)
-
-    return matches
+    return aliases.get(value, value)
 
 
-def find_missing_skills(
-    required_skills: list[str],
-    github_skills: list[str],
+def unique_list(items: list[str]) -> list[str]:
+    """
+    Return a list without duplicates while preserving order.
+    """
+
+    result = []
+    seen = set()
+
+    for item in items:
+
+        normalized = item.strip().lower()
+
+        if normalized and normalized not in seen:
+            seen.add(normalized)
+            result.append(item)
+
+    return result
+
+
+def get_target_skills(
+    target_role: str | None,
+    job_description: str | None = None,
 ) -> list[str]:
+
     """
-    Find target skills that are not clearly
-    represented in GitHub repository data.
+    Determine important skills from either:
+
+    1. Target role
+    2. Job description
+
+    This is currently deterministic.
+
+    Later the LLM can replace/enhance this logic.
     """
 
-    github_skills_normalized = {
-        normalize(skill)
-        for skill in github_skills
-    }
+    skills = []
 
-    missing = []
+    # Role-based skills
 
-    for skill in required_skills:
+    if target_role:
 
-        if normalize(skill) not in github_skills_normalized:
-            missing.append(skill)
+        role_key = target_role.strip().lower()
 
-    return missing
+        role_data = ROLE_RECOMMENDATIONS.get(
+            role_key,
+            {}
+        )
+
+        skills.extend(
+            role_data.get(
+                "important_skills",
+                []
+            )
+        )
+
+    # JD-based skills
+
+    if job_description:
+
+        text = job_description.lower()
+
+        known_skills = [
+            "python",
+            "fastapi",
+            "django",
+            "flask",
+            "java",
+            "javascript",
+            "typescript",
+            "react",
+            "html",
+            "css",
+            "sql",
+            "mysql",
+            "postgresql",
+            "mongodb",
+            "git",
+            "docker",
+            "aws",
+            "azure",
+            "rest api",
+            "api",
+            "pandas",
+            "numpy",
+        ]
+
+        for skill in known_skills:
+
+            if skill in text:
+
+                formatted = skill.title()
+
+                if skill == "fastapi":
+                    formatted = "FastAPI"
+
+                elif skill == "postgresql":
+                    formatted = "PostgreSQL"
+
+                elif skill == "rest api":
+                    formatted = "REST API"
+
+                elif skill == "api":
+                    formatted = "API"
+
+                skills.append(formatted)
+
+    return unique_list(skills)
 
 
-def analyze_repository_alignment(
+# Extract GitHub skills
+
+def extract_github_skills(
+    github_data: dict[str, Any],
+) -> list[str]:
+
+    """
+    Extract skills already detected from GitHub data.
+    """
+
+    skills = []
+
+    github_skills = github_data.get(
+        "github_skills",
+        []
+    )
+
+    for skill in github_skills:
+
+        if isinstance(skill, str):
+            skills.append(skill)
+
+    return unique_list(skills)
+
+
+# Extract repository list
+
+def extract_repositories(
+    github_data: dict[str, Any],
+) -> list[dict[str, Any]]:
+
+    repositories = github_data.get(
+        "repository_analysis",
+        []
+    )
+
+    if not isinstance(repositories, list):
+        return []
+
+    return repositories
+
+
+# Find repository recommendations
+
+def analyze_repository(
     repository: dict[str, Any],
-    required_skills: list[str],
+    target_skills: list[str],
 ) -> dict[str, Any]:
-    """
-    Analyze one repository against target skills.
-    """
 
-    repository_skills = set()
+    name = repository.get(
+        "name",
+        "Unknown Repository"
+    )
 
-    for language in repository.get(
+    description = repository.get(
+        "description"
+    )
+
+    languages = repository.get(
         "languages",
         []
-    ):
-        repository_skills.add(
-            normalize(language)
-        )
+    )
 
-    for topic in repository.get(
+    topics = repository.get(
         "topics",
         []
-    ):
-        repository_skills.add(
-            normalize(topic)
+    )
+
+    matched_skills = repository.get(
+        "matched_skills",
+        []
+    )
+
+    recommendations = []
+
+    # README
+
+    has_readme = repository.get(
+        "has_readme",
+        True
+    )
+
+    if not has_readme:
+
+        recommendations.append(
+            "Add a clear README explaining the project purpose, setup, architecture, technologies and usage."
         )
 
-    matched = []
+    # Description
 
-    for skill in required_skills:
+    if not description:
 
-        if normalize(skill) in repository_skills:
-            matched.append(skill)
+        recommendations.append(
+            "Add a concise repository description explaining the project's purpose."
+        )
+
+    # Topics
+
+    if not topics:
+
+        recommendations.append(
+            "Add relevant GitHub topics based on the project's technologies and purpose."
+        )
+
+    # Technology visibility
+
+    repo_skills = [
+        normalize_skill(skill)
+        for skill in matched_skills
+        if isinstance(skill, str)
+    ]
+
+    repo_languages = [
+        normalize_skill(language)
+        for language in languages
+        if isinstance(language, str)
+    ]
+
+    visible_technologies = unique_list(
+        matched_skills + languages
+    )
+
+    # Target-role technology recommendations
+
+    missing_from_repo = []
+
+    for skill in target_skills:
+
+        normalized_target = normalize_skill(
+            skill
+        )
+
+        if (
+            normalized_target not in repo_skills
+            and normalized_target not in repo_languages
+        ):
+
+            missing_from_repo.append(
+                skill
+            )
+
+    if missing_from_repo:
+
+        recommendations.append(
+            "If these technologies are genuinely used in the project, document them clearly in the README: "
+            + ", ".join(missing_from_repo)
+            + "."
+        )
+
+    # Architecture
+
+    repository_files = repository.get(
+        "files",
+        []
+    )
+
+    if isinstance(repository_files, list):
+
+        has_backend_structure = any(
+            str(item).lower() in {
+                "backend",
+                "app",
+                "api",
+                "server",
+                "src",
+            }
+            for item in repository_files
+        )
+
+        if has_backend_structure:
+
+            recommendations.append(
+                "Document the backend architecture and explain the main modules and responsibilities."
+            )
+
+    # Final repository result
 
     return {
-        "name": repository.get(
-            "name",
-            "Unknown"
-        ),
-
-        "description": repository.get(
-            "description"
-        ),
-
-        "matched_skills": matched,
-
-        "languages": repository.get(
-            "languages",
-            []
-        ),
-
-        "topics": repository.get(
-            "topics",
-            []
-        ),
-
-        "has_readme": repository.get(
-            "has_readme",
-            False
+        "repository": name,
+        "visible_technologies": visible_technologies,
+        "matched_target_skills": [
+            skill
+            for skill in target_skills
+            if normalize_skill(skill)
+            in repo_skills + repo_languages
+        ],
+        "missing_target_skills": missing_from_repo,
+        "recommendations": unique_list(
+            recommendations
         ),
     }
 
 
-def generate_github_alignment(
+# Profile recommendations
+
+def generate_profile_recommendations(
     github_data: dict[str, Any],
     target_role: str,
-    required_skills: list[str],
-) -> dict[str, Any]:
-    """
-    Compare the current GitHub profile with
-    the requirements of the target role.
+    target_skills: list[str],
+) -> list[str]:
 
-    No numerical scoring is used.
-    """
+    recommendations = []
 
-    profile = github_data.get(
-        "profile",
+    repositories = extract_repositories(
+        github_data
+    )
+
+    github_skills = extract_github_skills(
+        github_data
+    )
+
+    # Profile README
+
+    profile_repo = None
+
+    username = github_data.get(
+        "github_username"
+    )
+
+    for repo in repositories:
+
+        repo_name = str(
+            repo.get("name", "")
+        ).lower()
+
+        if username and repo_name == username.lower():
+
+            profile_repo = repo
+            break
+
+    if profile_repo:
+
+        recommendations.append(
+            "Use the GitHub profile README to clearly position the profile toward "
+            + target_role
+            + "."
+        )
+
+    else:
+
+        recommendations.append(
+            "Create or improve the GitHub profile README with a clear career direction toward "
+            + target_role
+            + "."
+        )
+
+    # Skills
+
+    missing_skills = []
+
+    normalized_github = [
+        normalize_skill(skill)
+        for skill in github_skills
+    ]
+
+    for skill in target_skills:
+
+        if normalize_skill(skill) not in normalized_github:
+
+            missing_skills.append(
+                skill
+            )
+
+    if missing_skills:
+
+        recommendations.append(
+            "Increase genuine GitHub evidence for these target-role skills through real projects and clear documentation: "
+            + ", ".join(missing_skills)
+            + "."
+        )
+
+    # Project visibility
+
+    if repositories:
+
+        recommendations.append(
+            "Feature the strongest repositories that demonstrate the target role."
+        )
+
+        recommendations.append(
+            "Keep repository names, descriptions, README files and topics consistent with the target career direction."
+        )
+
+    return unique_list(
+        recommendations
+    )
+
+
+# New project recommendations
+
+def generate_project_recommendations(
+    target_role: str,
+    target_skills: list[str],
+    github_data: dict[str, Any],
+) -> list[str]:
+
+    role_key = target_role.strip().lower()
+
+    role_data = ROLE_RECOMMENDATIONS.get(
+        role_key,
         {}
     )
 
-    repositories = github_data.get(
-        "repositories",
+    recommended_projects = role_data.get(
+        "recommended_project_types",
         []
     )
 
-    # 1. Collect GitHub technologies
-
-    github_skills = collect_github_skills(
-        repositories
+    github_skills = extract_github_skills(
+        github_data
     )
 
-    # 2. Find matching skills
+    normalized_github = [
+        normalize_skill(skill)
+        for skill in github_skills
+    ]
 
-    matching_skills = find_matching_skills(
-        required_skills,
-        github_skills,
+    recommendations = []
+
+    # Only recommend projects that fill
+    # a meaningful technology gap.
+
+    for project in recommended_projects:
+
+        if target_skills:
+
+            recommendations.append(
+                f"Consider building a {project} that genuinely demonstrates "
+                + ", ".join(target_skills[:4])
+                + "."
+            )
+
+    # Fallback
+
+    if not recommendations:
+
+        recommendations.append(
+            "Build one focused project that demonstrates the core technologies required for the target role."
+        )
+
+    return unique_list(
+        recommendations
     )
 
-    # 3. Find missing skills
 
-    missing_skills = find_missing_skills(
-        required_skills,
-        github_skills,
+# Main alignment function
+
+def generate_github_recommendation_plan(
+    github_data: dict[str, Any],
+    target_role: str | None = None,
+    job_description: str | None = None,
+) -> dict[str, Any]:
+
+    """
+    Generate a GitHub improvement plan.
+
+    Important:
+    This function does NOT produce a score.
+
+    It produces actionable recommendations.
+    """
+
+    if not target_role:
+
+        target_role = "Software Engineer"
+
+    target_role = target_role.strip()
+
+    # 1. Determine target skills
+
+    target_skills = get_target_skills(
+        target_role=target_role,
+        job_description=job_description,
     )
 
-    # 4. Repository analysis
+    # 2. Extract GitHub skills
 
-    repository_analysis = []
+    github_skills = extract_github_skills(
+        github_data
+    )
+
+    # 3. Repository analysis
+
+    repositories = extract_repositories(
+        github_data
+    )
+
+    repository_recommendations = []
 
     for repository in repositories:
 
-        repository_analysis.append(
-            analyze_repository_alignment(
-                repository,
-                required_skills,
-            )
+        repository_result = analyze_repository(
+            repository=repository,
+            target_skills=target_skills,
         )
 
-    # 5. README analysis
-
-    repositories_without_readme = [
-        repository["name"]
-        for repository in repositories
-        if not repository.get(
-            "has_readme",
-            False
+        repository_recommendations.append(
+            repository_result
         )
+
+    # 4. Profile recommendations
+
+    profile_recommendations = (
+        generate_profile_recommendations(
+            github_data=github_data,
+            target_role=target_role,
+            target_skills=target_skills,
+        )
+    )
+
+    # 5. Project recommendations
+
+    project_recommendations = (
+        generate_project_recommendations(
+            target_role=target_role,
+            target_skills=target_skills,
+            github_data=github_data,
+        )
+    )
+
+    # 6. Missing skills
+
+    normalized_github_skills = [
+        normalize_skill(skill)
+        for skill in github_skills
     ]
 
-    # 6. Topics analysis
+    missing_skills = []
 
-    repositories_without_topics = [
-        repository["name"]
-        for repository in repositories
-        if not repository.get(
-            "topics",
+    for skill in target_skills:
+
+        if normalize_skill(skill) not in normalized_github_skills:
+
+            missing_skills.append(
+                skill
+            )
+
+    # 7. Priority actions
+
+    priority_actions = []
+
+    priority_actions.extend(
+        profile_recommendations[:3]
+    )
+
+    for repository in repository_recommendations:
+
+        recommendations = repository.get(
+            "recommendations",
             []
         )
-    ]
 
-    # 7. Return alignment data
+        if recommendations:
+
+            priority_actions.append(
+                f"{repository['repository']}: "
+                + recommendations[0]
+            )
+
+    if missing_skills:
+
+        priority_actions.append(
+            "Build genuine project evidence for: "
+            + ", ".join(missing_skills)
+            + "."
+        )
+
+    # 8. Final response
 
     return {
         "target_role": target_role,
 
-        "github_username": profile.get(
-            "username",
-            "Not specified"
+        "github_username": github_data.get(
+            "github_username"
         ),
+
+        "target_skills": target_skills,
 
         "github_skills": github_skills,
 
-        "matching_skills": matching_skills,
-
         "missing_skills": missing_skills,
 
-        "repositories_without_readme": (
-            repositories_without_readme
-        ),
+        "profile_recommendations":
+            profile_recommendations,
 
-        "repositories_without_topics": (
-            repositories_without_topics
-        ),
+        "repository_recommendations":
+            repository_recommendations,
 
-        "repository_analysis": repository_analysis,
+        "new_project_recommendations":
+            project_recommendations,
+
+        "priority_actions":
+            unique_list(priority_actions),
     }
