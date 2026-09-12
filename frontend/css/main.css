@@ -41,13 +41,15 @@ body {
     color: var(--color-text);
 
     line-height: 1.5;
+    text-align: left;
 }
 
-.header{
+.header {
     font-family: var(--font-primary);
     font-optical-sizing: auto;
     font-weight: 400;
     font-style: normal;
+    text-align: left;
 }
 
 /* Links */
@@ -150,6 +152,8 @@ img {
     font-weight: 700;
 
     letter-spacing: 0.12em;
+    text-align: left;
+    display: block;
 }
 
 
@@ -380,6 +384,7 @@ Responsive Layout
 .form-group label {
     font-size: 0.95rem;
     font-weight: 600;
+    text-align: left;
 }
 
 .form-group input,
