@@ -231,27 +231,51 @@ def get_target_skills(
 
 # Extract GitHub skills
 
-def extract_github_skills(
-    github_data: dict[str, Any],
-) -> list[str]:
-
+def extract_github_skills(github_data):
     """
-    Extract skills already detected from GitHub data.
+    Extract skills from GitHub profile and repository language data.
     """
 
-    skills = []
+    skills = set()
 
-    github_skills = github_data.get(
-        "github_skills",
-        []
-    )
+    # Profile-level skills from bio
+    profile = github_data.get("profile", {})
+    bio = profile.get("bio") or ""
 
-    for skill in github_skills:
+    bio_lower = bio.lower()
 
-        if isinstance(skill, str):
-            skills.append(skill)
+    skill_keywords = {
+        "python": "Python",
+        "fastapi": "FastAPI",
+        "postgresql": "PostgreSQL",
+        "redis": "Redis",
+        "rest api": "REST API",
+        "sql": "SQL",
+        "rag": "RAG",
+        "llm": "LLM",
+        "multi-agent": "Multi-Agent Systems",
+        "ai orchestration": "AI Orchestration",
+        "vector database": "Vector Databases",
+        "vector databases": "Vector Databases",
+    }
 
-    return unique_list(skills)
+    for keyword, skill_name in skill_keywords.items():
+        if keyword in bio_lower:
+            skills.add(skill_name)
+
+    # Repository languages
+    repositories = github_data.get("repositories", [])
+
+    for repository in repositories:
+        languages = repository.get("languages", [])
+
+        for language in languages:
+            normalized = normalize_skill(language)
+
+            if normalized:
+                skills.add(normalized)
+
+    return sorted(skills)
 
 
 # Extract repository list
@@ -261,7 +285,7 @@ def extract_repositories(
 ) -> list[dict[str, Any]]:
 
     repositories = github_data.get(
-        "repository_analysis",
+        "repositories",
         []
     )
 
@@ -297,10 +321,23 @@ def analyze_repository(
         []
     )
 
+    # The collector currently provides repository languages directly.
+    # Older alignment data may also contain matched_skills, so support both.
     matched_skills = repository.get(
         "matched_skills",
         []
     )
+
+    technology_evidence = repository.get(
+        "technology_evidence",
+        []
+    )
+
+    if not isinstance(matched_skills, list):
+        matched_skills = []
+
+    if not isinstance(technology_evidence, list):
+        technology_evidence = []
 
     recommendations = []
 
@@ -348,7 +385,11 @@ def analyze_repository(
     ]
 
     visible_technologies = unique_list(
-        matched_skills + languages
+        [
+            str(skill)
+            for skill in matched_skills + languages
+            if isinstance(skill, str)
+        ]
     )
 
     # Target-role technology recommendations
@@ -382,7 +423,7 @@ def analyze_repository(
 
     repository_files = repository.get(
         "files",
-        []
+        repository.get("structure", [])
     )
 
     if isinstance(repository_files, list):
@@ -444,9 +485,8 @@ def generate_profile_recommendations(
 
     profile_repo = None
 
-    username = github_data.get(
-        "github_username"
-    )
+    profile = github_data.get("profile", {})
+    username = profile.get("username")
 
     for repo in repositories:
 
@@ -548,16 +588,29 @@ def generate_project_recommendations(
 
     recommendations = []
 
-    # Only recommend projects that fill
-    # a meaningful technology gap.
+    # Prefer projects that address skills not currently visible in
+    # the GitHub evidence. If there are no gaps, still recommend
+    # projects that strengthen the target-role portfolio.
+
+    missing_skills = [
+        skill
+        for skill in target_skills
+        if normalize_skill(skill) not in normalized_github
+    ]
+
+    skills_to_demonstrate = (
+        missing_skills[:4]
+        if missing_skills
+        else target_skills[:4]
+    )
 
     for project in recommended_projects:
 
-        if target_skills:
+        if skills_to_demonstrate:
 
             recommendations.append(
                 f"Consider building a {project} that genuinely demonstrates "
-                + ", ".join(target_skills[:4])
+                + ", ".join(skills_to_demonstrate)
                 + "."
             )
 
@@ -702,8 +755,8 @@ def generate_github_recommendation_plan(
         "target_role": target_role,
 
         "github_username": github_data.get(
-            "github_username"
-        ),
+            "profile", {}
+        ).get("username"),
 
         "target_skills": target_skills,
 
