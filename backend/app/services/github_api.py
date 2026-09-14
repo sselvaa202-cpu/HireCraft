@@ -83,6 +83,19 @@ def get_repository_contents(
         f"/repos/{owner}/{repository}/contents"
     )
 
+def get_repository_file(
+    owner: str,
+    repository: str,
+    file_path: str,
+):
+    """
+    Get the content of a specific file from a GitHub repository.
+    """
+
+    return github_request(
+        f"/repos/{owner}/{repository}/contents/{file_path}"
+    )
+
 
 def get_repository_readme(
     owner: str,
