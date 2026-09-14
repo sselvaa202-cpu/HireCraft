@@ -63,6 +63,18 @@ def get_github_repositories(
         f"/users/{username}/repos?per_page=100&sort=updated"
     )
 
+def get_repository_file(
+    owner: str,
+    repository: str,
+    file_path: str,
+):
+    """
+    Get the content of a specific file from a GitHub repository.
+    """
+
+    return github_request(
+        f"/repos/{owner}/{repository}/contents/{file_path}"
+    )
 
 def get_repository_languages(
     owner: str,
